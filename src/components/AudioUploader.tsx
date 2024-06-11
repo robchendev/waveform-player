@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 
-const AudioUploader = () => {
-  const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+interface AudioUploaderProps {
+  setAudioFile: (file: File) => void;
+}
+
+const AudioUploader = ({ setAudioFile }: AudioUploaderProps) => {
   const [error, setError] = useState<string | null>(null);
 
   const onFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,15 +19,8 @@ const AudioUploader = () => {
     setAudioFile(e.target.files[0]);
   };
 
-  const onSubmit = () => {
-    // setIsLoading(true)
-    // setError(null)
-    console.log(audioFile);
-  };
-
   return (
     <div className="flex gap-4 flex-col">
-      {/* Add allowed file types */}
       <p>Only .MP3, .FLAC, .WAV allowed</p>
       <input
         type="file"
@@ -34,15 +29,7 @@ const AudioUploader = () => {
         accept="audio/mp3, audio/flac, audio/wav"
         className="block"
       />
-      <button
-        type="submit"
-        disabled={isLoading}
-        onClick={onSubmit}
-        className="rounded-sm bg-white text-black px-2 py-1 self-start"
-      >
-        Submit
-      </button>
-      {error && <p className="border border-red-500">Error: {error}</p>}
+      {error && <p className="border border-red-500 self-start">Error: {error}</p>}
     </div>
   );
 };

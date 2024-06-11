@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
 import AudioUploader from "@/components/AudioUploader";
-import Image from "next/image";
+import AudioPlayer from "@/components/AudioPlayer";
+import { useState } from "react";
 
 export default function Home() {
-  // 1. Get audio file 
-  // 2. confirm it is an audio file
-  // 3. show audio waveform
+  const [audioFile, setAudioFile] = useState<File | null>(null);
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-slate-800">
-      <AudioUploader />
+    <main className="flex min-h-screen flex-col items-center p-24 bg-slate-800 [&>div]:w-full">
+      <AudioUploader setAudioFile={setAudioFile} />
+      {audioFile && <AudioPlayer audioSrc={URL.createObjectURL(audioFile)} />}
     </main>
   );
 }

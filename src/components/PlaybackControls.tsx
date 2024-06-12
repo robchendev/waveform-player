@@ -1,6 +1,8 @@
 import React from "react";
+import { CutRegion } from "../types";
 
 interface PlaybackControlsProps {
+  onRegionCut: () => void;
   onPlayPause: () => void;
   onStop: () => void;
   onLoopCountChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -11,6 +13,7 @@ interface PlaybackControlsProps {
 }
 
 const PlaybackControls = ({
+  onRegionCut,
   onPlayPause,
   onStop,
   onLoopCountChange,
@@ -23,6 +26,7 @@ const PlaybackControls = ({
     <div className="flex gap-2">
       <button onClick={onPlayPause}>{isPlaying ? "Pause" : "Play"}</button>
       <button onClick={onStop}>Stop</button>
+      <button onClick={onRegionCut}>Cut Region</button>
       <label>
         <input className="mr-1" type="checkbox" checked={loop} onChange={() => setLoop(!loop)} />
         Loop selection

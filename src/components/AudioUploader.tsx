@@ -20,14 +20,15 @@ const AudioUploader = ({ setAudioFile }: AudioUploaderProps) => {
   };
 
   return (
-    <div className="flex gap-4 flex-col">
+    <div className="flex gap-2 flex-col">
       <p>Only .MP3, .FLAC, .WAV allowed</p>
       <input
         type="file"
         name="audio-file"
         onChange={onFileUpload}
         accept="audio/mp3, audio/flac, audio/wav"
-        className="block"
+        className="bg-slate-900 text-white w-full border-2 border-slate-500 shadow-sm rounded-lg text-sm 
+          file:bg-slate-700 file:border-0 file:me-4 file:py-3 file:px-4 file:text-white file:cursor-pointer file:font-medium"
       />
       {error && <p className="border border-red-500 self-start">Error: {error}</p>}
     </div>

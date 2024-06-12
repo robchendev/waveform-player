@@ -1,39 +1,65 @@
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useWavesurfer } from "@wavesurfer/react";
-import Timeline from "wavesurfer.js/dist/plugins/timeline.esm.js";
+import TimelinePlugin from "wavesurfer.js/plugins/timeline";
 import { formatTime } from "@/utils/timeline";
-
+import { useRegions } from "@/hooks/useRegions";
+import PlaybackControls from "./PlaybackControls";
 interface AudioUploaderProps {
   audioSrc: string;
 }
 
 const AudioPlayer = ({ audioSrc }: AudioUploaderProps) => {
+  const [loop, setLoop] = useState(false);
+  const [loopCount, setLoopCount] = useState<number>(-1);
   const containerRef = useRef(null);
+
   const { wavesurfer, isPlaying, currentTime } = useWavesurfer({
     container: containerRef,
     height: 100,
     waveColor: "rgb(200, 0, 200)",
     progressColor: "rgb(100, 0, 100)",
     url: audioSrc,
-    plugins: useMemo(() => [Timeline.create()], []),
+    plugins: useMemo(() => [TimelinePlugin.create()], []),
   });
 
-  const onPlayPause = useCallback(() => {
-    wavesurfer && wavesurfer.playPause();
-  }, [wavesurfer]);
+  const wsRegionsRef = useRegions(wavesurfer, loop, loopCount);
 
-  const onStop = useCallback(() => {
+  const onPlayPause = () => {
+    wavesurfer && wavesurfer.playPause();
+  };
+
+  const onStop = () => {
+    wsRegionsRef.current?.clearRegions();
     wavesurfer && wavesurfer.stop();
-  }, [wavesurfer]);
+  };
+
+  const onLoopCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === "") {
+      setLoopCount(-1);
+      return;
+    }
+    const numericValue = parseInt(value);
+    if (!isNaN(numericValue) && numericValue > 0) {
+      setLoopCount(numericValue);
+    } else if (value === "") {
+      setLoopCount(-1);
+    }
+  };
 
   return (
     <>
       <div ref={containerRef} />
       <p>Current time: {formatTime(currentTime)}</p>
-      <div className="flex gap-2">
-        <button onClick={onPlayPause}>{isPlaying ? "Pause" : "Play"}</button>
-        <button onClick={onStop}>Stop</button>
-      </div>
+      <PlaybackControls
+        onPlayPause={onPlayPause}
+        onStop={onStop}
+        onLoopCountChange={onLoopCountChange}
+        setLoop={setLoop}
+        loop={loop}
+        loopInputValue={loopCount === -1 ? "" : loopCount}
+        isPlaying={isPlaying}
+      />
     </>
   );
 };

@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useWavesurfer } from "@wavesurfer/react";
 import TimelinePlugin from "wavesurfer.js/plugins/timeline";
-import { formatTime } from "@/utils/timeline";
 import { useRegions } from "@/hooks/useRegions";
 import PlaybackControls from "./PlaybackControls";
 import { CutRegion, CutRegionPercent } from "../types";
@@ -86,7 +85,7 @@ const AudioPlayer = ({ audioSrc }: AudioUploaderProps) => {
 
   return (
     <>
-      <div className="relative w-full h-[100px]">
+      <div className="relative w-full h-[130px] mt-3">
         <div ref={containerRef} className="absolute w-full h-full" />
         {cutRegions.map((region: CutRegionPercent, index: number) => (
           <div
@@ -101,8 +100,7 @@ const AudioPlayer = ({ audioSrc }: AudioUploaderProps) => {
           </div>
         ))}
       </div>
-      <div className="relative z-30 p-4 bg-gray-900">
-        <p>Current time: {formatTime(currentTime)}</p>
+      <div className="relative z-30 bg-slate-900 p-3 rounded-lg">
         <PlaybackControls
           onPlayPause={onPlayPause}
           onStop={onStop}
@@ -112,6 +110,8 @@ const AudioPlayer = ({ audioSrc }: AudioUploaderProps) => {
           loopInputValue={loopCount === -1 ? "" : loopCount}
           isPlaying={isPlaying}
           onRegionCut={onRegionCut}
+          currentTime={currentTime}
+          audioLength={wavesurfer?.getDuration() ?? 0}
         />
       </div>
     </>

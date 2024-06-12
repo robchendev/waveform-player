@@ -4,7 +4,7 @@ import TimelinePlugin from "wavesurfer.js/plugins/timeline";
 import { formatTime } from "@/utils/timeline";
 import { useRegions } from "@/hooks/useRegions";
 import PlaybackControls from "./PlaybackControls";
-import { CutRegion } from "../types";
+import { CutRegion, CutRegionPercent } from "../types";
 
 interface AudioUploaderProps {
   audioSrc: string;
@@ -14,7 +14,7 @@ const AudioPlayer = ({ audioSrc }: AudioUploaderProps) => {
   const [loop, setLoop] = useState(false);
   const [loopCount, setLoopCount] = useState<number>(-1);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [cutRegions, setCutRegions] = useState<CutRegion[]>([]); // Percent
+  const [cutRegions, setCutRegions] = useState<CutRegionPercent[]>([]); // Decimal and Percent
   const [currentCutRegion, setCurrentCutRegion] = useState<CutRegion | null>(null); // Decimal
 
   const { wavesurfer, isPlaying, currentTime } = useWavesurfer({
@@ -53,43 +53,48 @@ const AudioPlayer = ({ audioSrc }: AudioUploaderProps) => {
   };
 
   const onRegionCut = () => {
-    console.log("region-cut");
-    const event = new CustomEvent("region-cut", {
-      detail: {
-        message: "Region cut event triggered",
-      },
-    });
-    if (containerRef.current) {
-      containerRef.current.dispatchEvent(event);
-    }
+    const event = new Event("region-cut");
+    containerRef.current?.dispatchEvent(event);
   };
 
   useEffect(() => {
     if (!currentCutRegion || !wavesurfer) {
       return;
     }
-    console.log("currentCutRegion:", currentCutRegion);
-    console.log(wavesurfer?.getDuration());
 
     // Calculate display percentage of start and end locators
     const audioEnd = wavesurfer.getDuration();
     const locatorPercentStart = (100 * currentCutRegion.start) / audioEnd;
     const locatorPercentEnd = (100 * currentCutRegion.end) / audioEnd;
-    console.log(locatorPercentStart, locatorPercentEnd);
-    setCutRegions((cr) => [...cr, { start: locatorPercentStart, end: locatorPercentEnd }]);
+    setCutRegions((cr) => [
+      ...cr,
+      {
+        start: currentCutRegion.start,
+        end: currentCutRegion.end,
+        startPercent: locatorPercentStart,
+        endPercent: locatorPercentEnd,
+      },
+    ]);
   }, [currentCutRegion, wavesurfer]);
+
+  useEffect(() => {
+    const isInCutRegion = cutRegions.some(
+      (region) => currentTime >= region.start && currentTime <= region.end
+    );
+    wavesurfer?.setMuted(isInCutRegion);
+  }, [wavesurfer, cutRegions, currentTime]);
 
   return (
     <>
       <div className="relative w-full h-[100px]">
         <div ref={containerRef} className="absolute w-full h-full" />
-        {cutRegions.map((region, index) => (
+        {cutRegions.map((region: CutRegionPercent, index: number) => (
           <div
             key={index}
             className="absolute top-0 bg-slate-800 text-white pointer-events-none z-20 flex items-center h-full"
             style={{
-              left: `${region.start}%`,
-              width: `${region.end - region.start}%`,
+              left: `${region.startPercent}%`,
+              width: `${region.endPercent - region.startPercent}%`,
             }}
           >
             <div className="h-px bg-[#C800C8] w-full" />

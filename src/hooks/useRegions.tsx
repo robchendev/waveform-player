@@ -106,10 +106,7 @@ export const useRegions = (
       }
     };
 
-    const handleRegionCut = (event: CustomEvent) => {
-      console.log("Custom event 'region-cut' received:", event.detail.message);
-      console.log(regionLocatorRef.current);
-
+    const handleRegionCut = () => {
       if (regionLocatorRef.current) {
         setCurrentCutRegion(regionLocatorRef.current);
         regionLocatorRef.current = null;

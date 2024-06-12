@@ -44,8 +44,14 @@ const AudioPlayer = ({ audioSrc }: AudioUploaderProps) => {
       return;
     }
     const numericValue = parseInt(value);
-    if (!isNaN(numericValue) && numericValue > 0) {
-      setLoopCount(numericValue);
+    if (!isNaN(numericValue)) {
+      if (numericValue === 0) {
+        setLoopCount(-1);
+        setLoop(false);
+      }
+      if (numericValue > 0) {
+        setLoopCount(numericValue);
+      }
     } else if (value === "") {
       setLoopCount(-1);
     }
@@ -107,7 +113,7 @@ const AudioPlayer = ({ audioSrc }: AudioUploaderProps) => {
           onLoopCountChange={onLoopCountChange}
           setLoop={setLoop}
           loop={loop}
-          loopInputValue={loopCount === -1 ? "" : loopCount}
+          loopInputValue={!loop ? 0 : loopCount === -1 ? "" : loopCount}
           isPlaying={isPlaying}
           onRegionCut={onRegionCut}
           currentTime={currentTime}

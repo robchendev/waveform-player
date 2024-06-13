@@ -23,7 +23,6 @@ const AudioPlayer = ({ audioSrc }: AudioUploaderProps) => {
     progressColor: "#640064",
     cursorColor: "#fff",
     url: audioSrc,
-    plugins: useMemo(() => [TimelinePlugin.create()], []),
   });
 
   const wsRegionsRef = useRegions(wavesurfer, loop, loopCount, setCurrentCutRegion, containerRef);
@@ -91,7 +90,7 @@ const AudioPlayer = ({ audioSrc }: AudioUploaderProps) => {
 
   return (
     <>
-      <div className="relative w-full h-[130px] mt-3">
+      <div className="relative w-full h-[100px] mt-3">
         <div ref={containerRef} className="absolute w-full h-full" />
         {cutRegions.map((region: CutRegionPercent, index: number) => (
           <div
